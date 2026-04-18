@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const navLinkClass =
-  "text-sm text-stone-600 transition-colors hover:text-stone-900";
+  "rounded-md px-3 py-2 text-base font-medium text-stone-800 transition-colors hover:bg-stone-100 hover:text-stone-950 md:px-4 md:py-2.5 md:text-[1.05rem]";
 
 export function SiteHeader() {
   return (
@@ -13,7 +13,7 @@ export function SiteHeader() {
         >
           Travel Journal
         </Link>
-        <nav aria-label="Primary" className="flex items-center gap-8">
+        <nav aria-label="Primary" className="flex items-center gap-2 md:gap-3">
           <Link href="/" className={navLinkClass}>
             Home
           </Link>
