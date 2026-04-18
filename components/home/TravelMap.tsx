@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 
-import { placesPreview } from "@/data/places-preview";
+import { placesPreview, type PlacePreview } from "@/data/places-preview";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -11,7 +11,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
  * Map style URL. Default presets (swap the path after /mapbox/):
  * - streets-v12 — full-color roads, parks, water (good for travel sites)
  * - light-v11 — minimal, near monochrome
- * - outdoors-v12 — terrain / greens stronger
+ * - outdoors-v12 — terrain / greens, terrain
  * - satellite-streets-v12 — imagery + labels
  * Custom: Mapbox Studio (https://studio.mapbox.com/) → open or duplicate a style →
  * Share → copy the "Style URL" and paste it here as `style: "mapbox://styles/..."`.
@@ -24,6 +24,41 @@ function escapeHtml(text: string) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+/** Popup HTML: whole card is one link; photo grid from place.gallery */
+function buildPopupHtml(place: PlacePreview) {
+  const href = `/places/${encodeURIComponent(place.slug)}`;
+  const g = place.gallery;
+  const n = g.length;
+
+  let gridInner = "";
+
+  if (n === 0) {
+    gridInner = `<div class="travel-map-popup-card__empty">No photos yet</div>`;
+  } else {
+    const showMoreCell = n > 6;
+    const thumbCount = showMoreCell ? 5 : Math.min(6, n);
+    for (let i = 0; i < thumbCount; i++) {
+      const src = escapeHtml(g[i].src);
+      gridInner += `<div class="travel-map-popup-card__cell"><img class="travel-map-popup-card__thumb" src="${src}" alt="" loading="lazy" decoding="async" /></div>`;
+    }
+    if (showMoreCell) {
+      const more = n - 5;
+      gridInner += `<div class="travel-map-popup-card__cell travel-map-popup-card__cell--more" aria-hidden="true"><span class="travel-map-popup-card__more-label">+${more}</span></div>`;
+    }
+  }
+
+  return `
+    <a href="${href}" class="travel-map-popup-card-link">
+      <div class="travel-map-popup-card">
+        <strong class="travel-map-popup-card__title">${escapeHtml(place.name)}</strong>
+        <p class="travel-map-popup-card__region">${escapeHtml(place.region)}</p>
+        <div class="travel-map-popup-card__grid">${gridInner}</div>
+        <p class="travel-map-popup-card__hint">${n} photo${n === 1 ? "" : "s"} · click to open</p>
+      </div>
+    </a>
+  `;
 }
 
 export default function TravelMap() {
@@ -51,19 +86,12 @@ export default function TravelMap() {
     placesPreview.forEach((place) => {
       bounds.extend(place.coordinates);
 
-      const popupHtml = `
-        <div style="font-family: system-ui, sans-serif; min-width: 148px; padding: 2px 0;">
-          <strong style="font-size: 15px; font-weight: 500; color: #1c1917; letter-spacing: -0.02em;">${escapeHtml(place.name)}</strong>
-          <p style="margin: 6px 0 10px; font-size: 13px; color: #78716c; line-height: 1.4;">${escapeHtml(place.region)}</p>
-          <a href="/places/${encodeURIComponent(place.slug)}" style="font-size: 13px; color: #57534e; text-decoration: underline; text-underline-offset: 3px;">View place</a>
-        </div>
-      `;
-
       const popup = new mapboxgl.Popup({
         offset: 14,
         closeButton: true,
-        maxWidth: "240px",
-      }).setHTML(popupHtml);
+        maxWidth: "340px",
+        className: "travel-map-popup",
+      }).setHTML(buildPopupHtml(place));
 
       new mapboxgl.Marker({ color: "#292524" })
         .setLngLat(place.coordinates)

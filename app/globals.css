@@ -3,13 +3,145 @@
 @tailwind utilities;
 
 :root {
-  --background: #fafaf9;
+  /* Warm paper base (editorial / calm, not pure white) */
+  --background: #f7f5f2;
   --foreground: #1c1917;
-  --muted: #57534e;
-  --border: #e7e5e4;
+  --muted: #5a524a;
+  --border: #e5e0d8;
+  --accent: #1a5d7a;
+  --accent-hover: #144a61;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+}
+
+/* Mapbox popup: full-card link + photo grid */
+.mapboxgl-popup.travel-map-popup .mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 12px 36px rgba(15, 23, 42, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border);
+  background: var(--background);
+}
+
+.mapboxgl-popup.travel-map-popup .mapboxgl-popup-close-button {
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 26px;
+  color: var(--muted);
+  border-radius: 6px;
+}
+
+.mapboxgl-popup.travel-map-popup .mapboxgl-popup-close-button:hover {
+  background: rgba(26, 93, 122, 0.08);
+  color: var(--foreground);
+}
+
+.travel-map-popup-card-link {
+  display: block;
+  text-decoration: none !important;
+  color: inherit !important;
+  cursor: pointer;
+  outline: none;
+}
+
+.travel-map-popup-card-link:hover .travel-map-popup-card__thumb {
+  opacity: 0.92;
+}
+
+.travel-map-popup-card-link:hover .travel-map-popup-card {
+  background: color-mix(in srgb, var(--background) 92%, var(--accent) 8%);
+}
+
+.travel-map-popup-card {
+  min-width: 220px;
+  max-width: 300px;
+  padding: 14px 14px 12px;
+}
+
+.travel-map-popup-card__title {
+  display: block;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.travel-map-popup-card__region {
+  margin: 6px 0 0;
+  font-family: system-ui, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.travel-map-popup-card__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.travel-map-popup-card__cell {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #e7e5e0;
+}
+
+.travel-map-popup-card__thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.travel-map-popup-card__cell--more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(26, 93, 122, 0.88) 0%,
+    rgba(20, 74, 97, 0.92) 100%
+  );
+}
+
+.travel-map-popup-card__more-label {
+  font-family: system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.travel-map-popup-card__empty {
+  grid-column: 1 / -1;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.travel-map-popup-card__hint {
+  margin: 10px 0 0;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.85;
 }
