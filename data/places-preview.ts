@@ -34,7 +34,7 @@ export const placesPreview: PlacePreview[] = [
     id: "Berlin",
     slug: "berlin",
     name: "Berlin",
-    region: "Berlin",
+    region: "Berlin, Germany",
     description:
       "Berlin is a city of history and culture. It is a city of museums and art. It is a city of music and dance. It is a city of food and drink. It is a city of people and life.",
     year: "2025",
@@ -56,7 +56,7 @@ export const placesPreview: PlacePreview[] = [
     id: "Paris",
     slug: "paris",
     name: "Paris",
-    region: "Paris",
+    region: "Paris, France",
     description:
       "Paris is a city of love and romance. It is a city of fashion and art. It is a city of music and dance. It is a city of food and drink. It is a city of people and life.",
     year: "2025",
@@ -77,7 +77,7 @@ export const placesPreview: PlacePreview[] = [
     id: "Switzerland",
     slug: "switzerland",
     name: "Switzerland",
-    region: "Switzerland",
+    region: "Interlaken, Switzerland",
     description:
       "Switzerland is a country of mountains and lakes. It is a country of cheese and chocolate. It is a country of music and dance. It is a country of food and drink. It is a country of people and life.",
     year: "2025",

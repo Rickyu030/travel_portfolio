@@ -18,6 +18,10 @@ import "mapbox-gl/dist/mapbox-gl.css";
  */
 const MAP_STYLE = "mapbox://styles/mapbox/streets-v12";
 
+/** Mini photo wall: 2×2 tiles @ 32px; if &gt;4 photos, pick 4 at random */
+const WALL_SIZE_PX = 32;
+const WALL_GAP_PX = 3;
+
 function escapeHtml(text: string) {
   return text
     .replace(/&/g, "&amp;")
@@ -26,36 +30,63 @@ function escapeHtml(text: string) {
     .replace(/"/g, "&quot;");
 }
 
-/** Popup HTML: whole card is one link; photo grid from place.gallery */
+/** Mapbox / GeoJSON order: [lng, lat] */
+function formatCoordinates([lng, lat]: [number, number]): string {
+  const ns = lat >= 0 ? "N" : "S";
+  const ew = lng >= 0 ? "E" : "W";
+  return `${Math.abs(lat).toFixed(1)}° ${ns}, ${Math.abs(lng).toFixed(1)}° ${ew}`;
+}
+
+function shuffle<T>(items: readonly T[]): T[] {
+  const a = [...items];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function photosForWall(g: PlacePreview["gallery"]): PlacePreview["gallery"] {
+  if (g.length === 0) return [];
+  if (g.length <= 4) return g;
+  return shuffle(g).slice(0, 4);
+}
+
 function buildPopupHtml(place: PlacePreview) {
   const href = `/places/${encodeURIComponent(place.slug)}`;
-  const g = place.gallery;
-  const n = g.length;
+  const wallPhotos = photosForWall(place.gallery);
+  const n = wallPhotos.length;
 
-  let gridInner = "";
+  let wallInner = "";
+  let wallClass = "travel-map-popup-card__wall";
 
   if (n === 0) {
-    gridInner = `<div class="travel-map-popup-card__empty">No photos yet</div>`;
+    wallClass += " travel-map-popup-card__wall--empty";
+    wallInner = "No photos";
   } else {
-    const showMoreCell = n > 6;
-    const thumbCount = showMoreCell ? 5 : Math.min(6, n);
-    for (let i = 0; i < thumbCount; i++) {
-      const src = escapeHtml(g[i].src);
-      gridInner += `<div class="travel-map-popup-card__cell"><img class="travel-map-popup-card__thumb" src="${src}" alt="" loading="lazy" decoding="async" /></div>`;
+    for (let i = 0; i < n; i++) {
+      const src = escapeHtml(wallPhotos[i].src);
+      wallInner += `<span class="travel-map-popup-card__tile"><img src="${src}" alt="" width="${WALL_SIZE_PX}" height="${WALL_SIZE_PX}" loading="lazy" decoding="async" /></span>`;
     }
-    if (showMoreCell) {
-      const more = n - 5;
-      gridInner += `<div class="travel-map-popup-card__cell travel-map-popup-card__cell--more" aria-hidden="true"><span class="travel-map-popup-card__more-label">+${more}</span></div>`;
+    const empty = 4 - n;
+    for (let e = 0; e < empty; e++) {
+      wallInner += `<span class="travel-map-popup-card__tile travel-map-popup-card__tile--filler" aria-hidden="true"></span>`;
     }
   }
+
+  const coordsLine = formatCoordinates(place.coordinates);
 
   return `
     <a href="${href}" class="travel-map-popup-card-link">
       <div class="travel-map-popup-card">
-        <strong class="travel-map-popup-card__title">${escapeHtml(place.name)}</strong>
-        <p class="travel-map-popup-card__region">${escapeHtml(place.region)}</p>
-        <div class="travel-map-popup-card__grid">${gridInner}</div>
-        <p class="travel-map-popup-card__hint">${n} photo${n === 1 ? "" : "s"} · click to open</p>
+        <div class="travel-map-popup-card__row">
+          <div class="travel-map-popup-card__text">
+            <strong class="travel-map-popup-card__title">${escapeHtml(place.name)}</strong>
+            <p class="travel-map-popup-card__region">${escapeHtml(place.region)}</p>
+            <p class="travel-map-popup-card__coords">${escapeHtml(coordsLine)}</p>
+          </div>
+          <div class="${wallClass}" style="--wall-size:${WALL_SIZE_PX}px;--wall-gap:${WALL_GAP_PX}px">${wallInner}</div>
+        </div>
       </div>
     </a>
   `;
@@ -87,10 +118,10 @@ export default function TravelMap() {
       bounds.extend(place.coordinates);
 
       const popup = new mapboxgl.Popup({
-        offset: 14,
+        offset: 12,
         closeButton: true,
-        maxWidth: "340px",
-        className: "travel-map-popup",
+        maxWidth: "248px",
+        className: "travel-map-popup travel-map-popup--compact",
       }).setHTML(buildPopupHtml(place));
 
       new mapboxgl.Marker({ color: "#292524" })

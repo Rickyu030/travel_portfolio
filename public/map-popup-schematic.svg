@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="200" viewBox="0 0 360 200" fill="none">
+  <title>Map popup layout: text left, photo wall right</title>
+  <rect width="360" height="200" fill="#f7f5f2"/>
+  <rect x="24" y="32" width="312" height="136" rx="12" fill="#faf8f4" stroke="#e5e0d8" stroke-width="2"/>
+  <text x="40" y="58" font-family="Georgia, serif" font-size="14" fill="#1c1917">Place name</text>
+  <text x="40" y="80" font-family="system-ui, sans-serif" font-size="11" fill="#5a524a">Region</text>
+  <text x="40" y="102" font-family="ui-monospace, monospace" font-size="9" fill="#78716c">52.5° N, 13.4° E</text>
+  <g transform="translate(232, 44)">
+    <rect width="32" height="32" rx="4" fill="#d6d3cd"/>
+    <rect x="35" width="32" height="32" rx="4" fill="#c4c0b8"/>
+    <rect y="35" width="32" height="32" rx="4" fill="#b8b4ac"/>
+    <rect x="35" y="35" width="32" height="32" rx="4" fill="#a8a49c"/>
+  </g>
+  <text x="180" y="192" font-family="system-ui, sans-serif" font-size="9" fill="#78716c" text-anchor="middle">Compact panel — map stays visible around it</text>
+</svg>
